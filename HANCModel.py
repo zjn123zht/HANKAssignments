@@ -47,20 +47,20 @@ class HANCModelClass(EconModelClass,GEModelClass):
         par = self.par
 
         par.Nfix = 2 # number of fixed discrete states, two values of varphi
-        par.Nz = 7 # number of stochastic discrete states (here productivity)
+        par.Nz = 14 #7*2 # number of stochastic discrete states (here productivity)
+        par.Nzt = 7
 
         # a. preferences
         par.beta = 0.96 # discount factor
         par.sigma = 2.0 # CRRA coefficient
         par.varphi_min = .9
         par.varphi_max = 1.1
-        # par.varphi = 1.0
-        par.zeta = 1.0 # fixed individual productivity component
+        par.zeta = 1.0 # fixed individual productivity component, this is 1.
         par.nu = 1.0
 
         # b. income parameters
         par.rho_z = 0.96 # AR(1) parameter
-        par.sigma_psi = 0.10 # std. of shock
+        par.sigma_psi = 0.15 # std. of shock
 
         # Government stuff
         par.tau_a = .1
@@ -75,6 +75,10 @@ class HANCModelClass(EconModelClass,GEModelClass):
         # f. grids         
         par.a_max = 100.0 # maximum point in grid for a
         par.Na = 500 # number of grid points
+
+        par.Nzeta = 2
+        par.zeta_max = 1.1
+        par.zeta_min = .9
 
         # g. indirect approach: targets for stationary equilibrium
         par.r_ss_target = 0.03
@@ -98,6 +102,8 @@ class HANCModelClass(EconModelClass,GEModelClass):
         # a. grids
         par.Nvarphi = par.Nfix
         par.varphi_grid = np.zeros(par.Nvarphi)
+        par.zeta_grid = np.zeros(par.Nzeta)
+        par.zt_grid = np.zeros(par.Nzt)
         
         # b. solution
         self.allocate_GE() # should always be called here
