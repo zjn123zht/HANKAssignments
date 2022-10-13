@@ -11,22 +11,23 @@ def solve_hh_backwards(par,z_trans,r,w,vbeg_a_plus,vbeg_a,a,c,ell,l):
     for i_fix in nb.prange(par.Nfix):
             
         # a. solve step
-        for i_z in range(par.Nz):
-        
+        for i_z in nb.prange(par.Nz):
+            # print(vbeg_a_plus[i_fix,i_z,:])
             # define post tax variables
             w_tilde = w*(1-par.tau_ell)
             r_tilde = r*(1-par.tau_a)
 
             # prepare
             z = par.z_grid[i_z]
-            wt = par.zeta*z*w_tilde # use a list for zeta in the future as it is a state
+            wt = z*w_tilde # use a list for zeta in the future as it is a state
             fac = (wt/par.varphi_grid[i_fix])**(1/par.nu)
 
             # use FOCs
             c_endo = (par.beta*vbeg_a_plus[i_fix,i_z,:])**(-1/par.sigma) # parallel over asset states
             ell_endo = fac*(c_endo)**(-par.sigma/par.nu) # Find labour choice
-            # l_endo = par.zeta*z*ell_endo # effective labour supply, not needed 
-
+            # l_endo = par.zeta*z*ell_endo # effective labour supply, not needed
+            # print(c_endo)
+            # print(ell_endo)
             # interpolation of c and ell to a common grid
             m_endo = c_endo + par.a_grid - wt*ell_endo
             m_exo = (1+r_tilde)*par.a_grid # definition of exogenous cash on hand using the exogeneous asset grid
@@ -66,7 +67,7 @@ def solve_hh_backwards(par,z_trans,r,w,vbeg_a_plus,vbeg_a,a,c,ell,l):
                         c[i_fix,i_z,i_a] = ci
                         ell[i_fix,i_z,i_a] = elli
                         l[i_fix,i_z,i_a] = par.zeta*z*elli
-                    
+        
         # b. expectation step
         v_a = (1+r_tilde)*c[i_fix,:,:]**(-par.sigma)
         vbeg_a[i_fix] = z_trans[i_fix]@v_a
