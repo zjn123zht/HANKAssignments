@@ -11,23 +11,21 @@ class HANCModelClass(EconModelClass,GEModelClass):
     def settings(self):
         """ fundamental settings """
 
-        # a. namespaces (typically not changed)
-        self.namespaces = ['par','ini','ss','path','sim'] # not used today: 'ini', 'path', 'sim'
+        # a. namespaces
+        self.namespaces = ['par','ini','ss','path','sim']
 
-        # not used today: .sim and .path
-        
         # b. household
         self.grids_hh = ['a'] # grids
         self.pols_hh = ['a'] # policy functions
         self.inputs_hh = ['r','w'] # direct inputs
-        self.inputs_hh_z = [] # transition matrix inputs (not used today)
-        self.outputs_hh = ['a','c','ell','l'] # outputs, added 'l' for effective labour
+        self.inputs_hh_z = [] # transition matrix inputs
+        self.outputs_hh = ['a','c','ell','l'] # outputs, 'l' for effective labour
         self.intertemps_hh = ['vbeg_a'] # intertemporal variables
 
         # c. GE
-        self.shocks = [] # exogenous shocks (not used today)
-        self.unknowns = [] # endogenous unknowns (not used today)
-        self.targets = [] # targets = 0 (not used today)
+        self.shocks = [] # exogenous shocks
+        self.unknowns = [] # endogenous unknowns
+        self.targets = [] # targets = 0
 
         # d. all variables
         self.varlist = [
@@ -46,17 +44,24 @@ class HANCModelClass(EconModelClass,GEModelClass):
 
         par = self.par
 
-        par.Nfix = 2 # number of fixed discrete states, two values of varphi
-        par.Nz = 14 #7*2 # number of stochastic discrete states (here productivity)
-        par.Nzt = 7
+        # a. length of stochastic state grids
+        par.Nfix = 2 # number of fixed states. Only used for varphi (not zeta)
+        par.Nzt = 5 # number of productivity states
+        par.Nzeta = 2 # number of foxed productivity states
+        par.Nz = par.Nzt*par.Nzeta # number of stochastic discrete states multiplied by number of values of zeta = 7*2 = 14
 
         # a. preferences
         par.beta = 0.96 # discount factor
         par.sigma = 2.0 # CRRA coefficient
-        par.varphi_min = .9
-        par.varphi_max = 1.1
-        par.zeta = 1.0 # fixed individual productivity component, this is 1.
-        par.nu = 1.0
+        
+        par.varphi_min = .9 # lowest labour disutility coef 
+        par.varphi_max = 1.1 # highest labour disutility coef
+
+        par.zeta_min = .9 # lowest fixed productivity
+        par.zeta_max = 1.1 # highest fixed productivity
+        
+        # par.zeta = 1.0 # fixed individual productivity component, this is 1.
+        par.nu = 1.0 # inverse Frisch elasticity
 
         # b. income parameters
         par.rho_z = 0.96 # AR(1) parameter
@@ -75,10 +80,6 @@ class HANCModelClass(EconModelClass,GEModelClass):
         # f. grids         
         par.a_max = 100.0 # maximum point in grid for a
         par.Na = 500 # number of grid points
-
-        par.Nzeta = 2
-        par.zeta_max = 1.1
-        par.zeta_min = .9
 
         # g. indirect approach: targets for stationary equilibrium
         par.r_ss_target = 0.03
