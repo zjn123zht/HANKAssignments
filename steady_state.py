@@ -5,8 +5,6 @@ from consav.grids import equilogspace
 from consav.markov import log_rouwenhorst, find_ergodic
 from consav.misc import elapsed
 
-import root_finding
-
 # import scipy root finder for
 from scipy import optimize
 
@@ -124,7 +122,7 @@ def find_ss(model,do_print=False): # add other inputs
     par = model.par
 
     # b. run root finder, initial guesses totally arbitrary
-    res = optimize.root(obj_ss,[3.15205947,1.0225],method='hybr',tol=par.tol_ss,args=(model))
+    res = optimize.root(obj_ss,[3.15205947,1.0225],method='hybr',tol=par.tol_ss,args=(model)) # 3.15205947,1.0225
 
     # c. print statement that solver has ended
     if do_print:
