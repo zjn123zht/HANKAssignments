@@ -2,7 +2,7 @@ import time
 import numpy as np
 
 from consav.grids import equilogspace
-from consav.markov import log_rouwenhorst
+from consav.markov import log_rouwenhorst, find_ergodic
 from consav.misc import elapsed
 
 import root_finding
@@ -20,15 +20,25 @@ def prepare_hh_ss(model):
     # 1. grids #
     ############
     
-    # a. varphi
+    # a. varphi and zeta
     par.varphi_grid = np.array([par.varphi_min,par.varphi_max]) # Two possible states
-    # par.varphi_grid = np.array([1.0])
+    par.zeta_grid = np.array([par.zeta_min,par.zeta_max])
 
     # b. a
     par.a_grid[:] = equilogspace(0.0,ss.w*par.a_max,par.Na)
     
     # c. z
-    par.z_grid[:],z_trans,z_ergodic,_,_ = log_rouwenhorst(par.rho_z,par.sigma_psi,par.Nz) # Transition probabilities do not depend on the fixed states per definition
+    par.zt_grid[:],zt_trans,zt_ergodic,_,_ = log_rouwenhorst(par.rho_z,par.sigma_psi,par.Nzt) # Transition probabilities do not depend on the fixed states per definition
+
+    # Combine z and zeta for productivity grid
+    par.z_grid[:] = np.repeat(par.zeta_grid,par.Nzt)*np.tile(par.zt_grid,par.Nzeta)
+    P_zeta = np.eye(par.Nzeta) # Nzeta x Nzeta identity matrix for fixed state
+    z_trans = np.kron(P_zeta,zt_trans)
+    z_trans_cumsum = np.cumsum(z_trans,axis=1)
+    z_ergodic = np.tile(zt_ergodic,par.Nzeta)/par.Nzeta # This might be okay
+    z_ergodic_cumsum = np.cumsum(z_ergodic)
+
+    # print(np.sum(z_ergodic*par.z_grid)) # test if it sums to one
 
     #############################################
     # 2. transition matrix initial distribution #
@@ -56,7 +66,7 @@ def prepare_hh_ss(model):
 
 def obj_ss(x,model,do_print=False): # set x instead of K_ss
     """ objective when solving for steady state capital """
-
+    print('it')
     K_ss = x[0]
     L_ss = x[1]
 
@@ -143,12 +153,12 @@ def find_ss(model,do_print=False): # add other inputs
         print(f' C_ss = {ss.C:8.4f}')
         print('')
 
-        print('steady state prices')
+        print('steady state prices:')
         print(f' w_ss = {ss.w:8.4f}')
         print(f' r_ss = {ss.r:8.4f}')
         print('')
 
-        print('Check for market clearing')
+        print('Check for market clearing:')
         print(f'Excess savings           ={ss.clearing_A:8.4f}')
         print(f'Exess consumption demand ={ss.clearing_C:8.4f}')
         print(f'Excess labour supply     ={ss.clearing_L:8.4f}')        
