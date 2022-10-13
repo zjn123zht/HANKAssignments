@@ -39,7 +39,7 @@ def solve_hh_backwards(par,z_trans,r,w,vbeg_a_plus,vbeg_a,a,c,ell,l):
             a[i_fix,i_z,:] = m_exo - c[i_fix,i_z,:] + wt*ell[i_fix,i_z,:]
 
             # Refinement at borrowing constraint
-            for i_a in range(par.Na):
+            for i_a in nb.prange(par.Na):
                 
                 # If borrowing constraint is violated
                 if a[i_fix,i_z,i_a] < 0.0:
