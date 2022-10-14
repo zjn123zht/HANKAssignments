@@ -19,7 +19,7 @@ class HANCModelClass(EconModelClass,GEModelClass):
         self.pols_hh = ['a'] # policy functions
         self.inputs_hh = ['r','w'] # direct inputs
         self.inputs_hh_z = [] # transition matrix inputs
-        self.outputs_hh = ['a','c','ell','l'] # outputs, 'l' for effective labour
+        self.outputs_hh = ['a','c','ell','l','u'] # outputs, 'l' for effective labour
         self.intertemps_hh = ['vbeg_a'] # intertemporal variables
 
         # c. GE
@@ -47,7 +47,7 @@ class HANCModelClass(EconModelClass,GEModelClass):
         # a. length of stochastic state grids
         par.Nfix = 2 # number of fixed states. Only used for varphi (not zeta)
         par.Nzt = 5 # number of productivity states
-        par.Nzeta = 2 # number of foxed productivity states
+        par.Nzeta = 2 # number of fixed productivity states
         par.Nz = par.Nzt*par.Nzeta # number of stochastic discrete states multiplied by number of values of zeta = 7*2 = 14
 
         # a. preferences
@@ -68,8 +68,8 @@ class HANCModelClass(EconModelClass,GEModelClass):
         par.sigma_psi = 0.15 # std. of shock
 
         # Government stuff
-        par.tau_a = .1
-        par.tau_ell = .3
+        par.tau_a = .1 # interest rate tax
+        par.tau_ell = .3 # labour income tax
         par.G = .3
 
         # c. production and investment
