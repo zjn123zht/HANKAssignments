@@ -36,7 +36,7 @@ def prepare_hh_ss(model):
     z_ergodic = np.tile(zt_ergodic,par.Nzeta)/par.Nzeta # I know this is not the best coding
     z_ergodic_cumsum = np.cumsum(z_ergodic)
 
-    # assert np.isclose(np.sum(z_ergodic*par.z_grid),1.0) # test if each row sums to one
+    # assert np.isclose(np.sum(z_trans),1.0) # test if each row sums to one
 
     #############################################
     # 2. transition matrix initial distribution #
