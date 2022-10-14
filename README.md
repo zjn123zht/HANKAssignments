@@ -1,1 +1,3 @@
-# HANKAssignments
+- HANCModel.py defines the model class used
+- household_problem.py defines the intertemporal optimization problem of the householdws
+- steady_state.py finds the steady state of the economy and computes aggregates
