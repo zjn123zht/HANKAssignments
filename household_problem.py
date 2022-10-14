@@ -4,7 +4,7 @@ import numba as nb
 from consav.linear_interp import interp_1d_vec
 
 @nb.njit(parallel=True)        
-def solve_hh_backwards(par,z_trans,r,w,vbeg_a_plus,vbeg_a,a,c,ell,l):
+def solve_hh_backwards(par,z_trans,r,w,vbeg_a_plus,vbeg_a,a,c,ell,l,u):
     """ solve backwards with vbeg_a from previous iteration (here vbeg_a_plus) """
 
     # define post tax variables
@@ -72,7 +72,11 @@ def solve_hh_backwards(par,z_trans,r,w,vbeg_a_plus,vbeg_a,a,c,ell,l):
                         c[i_fix,i_z,i_a] = ci
                         ell[i_fix,i_z,i_a] = elli
                         l[i_fix,i_z,i_a] = z*elli
+
         
         # i. expectation step for continuation value in next iteration (previous period)
         v_a = (1+r_tilde)*c[i_fix,:,:]**(-par.sigma)
         vbeg_a[i_fix] = z_trans[i_fix]@v_a
+
+        # j. compute instantaneous utility of choice 
+        u[i_fix,:,:] = c[i_fix]**(1-par.sigma)/(1-par.sigma) - par.varphi_grid[i_fix]*ell[i_fix]**(1+par.nu) / (1+par.nu)
